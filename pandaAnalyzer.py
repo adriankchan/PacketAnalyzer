@@ -1,10 +1,10 @@
 import pandas as pd
 
 
-# Return a dataframe filtered with the source and destination
+# Return a dataframe filtered with the client and server
 def filter_by_ip(df, src, dest):
 
-    filtered = df.loc[(df['Source'] == src) & (df['Destination'] == dest)]
+    filtered = df.loc[((df['Source'] == src) & (df['Destination'] == dest)) | ((df['Source'] == dest) & (df['Destination'] == src))]
     return filtered
 
 
@@ -12,7 +12,6 @@ def filter_by_ip(df, src, dest):
 def filter_by_protocol(df, protocol):
     filtered = df.loc[df['Protocol'] == protocol]
     return filtered
-
 
 # Function to extract the important values from the info column
 def extract_values(row):
@@ -39,6 +38,7 @@ def extract_values(row):
 
     return output
 
+
 # Convert the Info column into searchable columns
 def make_dataframe_searchable(df):
     temp = pd.DataFrame()
@@ -51,6 +51,22 @@ def make_dataframe_searchable(df):
 
     return df2
 
+def search_bad_ack(df, server, client):
+
+    prev_server_to_client = None
+    prev_client_to_server = None
+    count = 0
+    for index, row in df.iterrows():
+        # Add logic to calculate packets
+        print(row['SEQ'])
+
+        #Keep track of the most recent exchanges
+        if row['Source'] == server:
+            prev_server_to_client = row
+        if row['Source'] == client:
+            prev_client = row
+
+
 
 # Import CSV Files
 file_name = 'ServerTraffic-F2018.csv'
@@ -61,4 +77,6 @@ protocol_filtered = filter_by_protocol(ip_filtered, 'TCP')
 
 # Run the desired IP through the filtering
 df2 = make_dataframe_searchable(protocol_filtered)
-print(df2)
+# print(df2)
+
+search_bad_ack(df2)
